@@ -8,7 +8,8 @@ from tkinter import filedialog, messagebox, ttk
 from sg8_campaign import CITY_TYPE, Campaign, MAX_OFFICER_LEVEL
 from sg8_files import SaveSnapshot, find_save_directory, game_is_running
 from sg8_names import GameCatalog, find_game_assets, load_catalog
-from sg8_realm import EQUIPMENT_STOCK, MAX_RESOURCES, RealmEdits, can_assign_soldiers, city_stat_maxima, edit_realm
+from sg8_realm import (EQUIPMENT_STOCK, MAX_OFFICER_SOLDIERS, MAX_RESOURCES, RealmEdits,
+                       can_assign_soldiers, city_stat_maxima, edit_realm)
 from sg8_realm_editor import RealmDialog
 from sg8_soldier_editor import SoldierDialog
 
@@ -408,7 +409,8 @@ class Editor(ttk.Frame):
         if self.realm_edits.maximize_soldiers:
             changes.append(f'拉满 {len(self._soldier_experience(self.campaign))} 种我方兵种的训练经验')
         if self.realm_edits.soldier_assignments:
-            changes.append(f'为 {len(self.realm_edits.soldier_assignments)} 名我方武将配置兵种')
+            changes.append(f'为 {len(self.realm_edits.soldier_assignments)} 名我方武将配置兵种，'
+                           f'兵力补至 {MAX_OFFICER_SOLDIERS}')
         return '\n'.join(changes)
 
     def export(self):

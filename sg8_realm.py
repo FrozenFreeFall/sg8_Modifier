@@ -9,6 +9,7 @@ from sg8_format import SaveFile, SaveFormatError, Token
 
 MAX_RESOURCES = 999_999_999
 EQUIPMENT_STOCK = 99
+MAX_OFFICER_SOLDIERS = 500
 
 # Use the largest configured bounds when the local game's city tables are unavailable.
 _CITY_STATS = {
@@ -97,6 +98,8 @@ def _edit_officer_soldiers(campaign: Campaign, values: list[Token], experience: 
             if officer.id in assignments:
                 soldier_id = assignments[officer.id]
                 values[state_at - 1] = soldier_id
+                _require_int(values, state_at + 1, '武将兵力')
+                values[state_at + 1] = MAX_OFFICER_SOLDIERS
             if soldier_id in experience:
                 _require_int(values, state_at, '武将兵种经验')
                 values[state_at] = experience[soldier_id]

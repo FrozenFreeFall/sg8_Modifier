@@ -6,7 +6,7 @@ from tkinter import ttk
 
 from sg8_campaign import CITIES, Campaign
 from sg8_names import SoldierTraining
-from sg8_realm import RealmEdits
+from sg8_realm import MAX_OFFICER_SOLDIERS, RealmEdits
 
 
 class SoldierDialog(tk.Toplevel):
@@ -48,7 +48,7 @@ class SoldierDialog(tk.Toplevel):
             self.target_list.configure(yscrollcommand=scrollbar.set)
             for officer_id, name in officers.items():
                 self.target_list.insert('', 'end', iid=str(officer_id), text=f'{name} [{officer_id}]')
-            ttk.Label(body, text='配兵保留现有兵力。0 兵力的武将需补兵后出战。', wraplength=420).grid(
+            ttk.Label(body, text=f'保存或导出时，配兵武将的兵力将补至 {MAX_OFFICER_SOLDIERS}。', wraplength=420).grid(
                 row=3, column=0, columnspan=2, sticky='w', pady=(5, 0))
         else:
             ttk.Label(body, text='在主窗口选中我方武将，即可配置兵种。', wraplength=420).grid(
@@ -91,5 +91,6 @@ class SoldierDialog(tk.Toplevel):
         if soldier_id is None or not self.officers:
             return
         self.edits.soldier_assignments.update(dict.fromkeys(self.officers, soldier_id))
-        self.status.set(f'已为 {len(self.officers)} 名武将暂存「{self.training[soldier_id].name}」配兵。')
+        self.status.set(f'已为 {len(self.officers)} 名武将暂存「{self.training[soldier_id].name}」配兵，'
+                        f'兵力将补至 {MAX_OFFICER_SOLDIERS}。')
         self.on_change()

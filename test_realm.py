@@ -31,7 +31,8 @@ class RealmEditsTests(unittest.TestCase):
         self.assertEqual(countries[factions[2].start:], country[old_rival:])
 
         troops = after._save.sections['TroopGameData']
-        self.assertEqual(troops[after._records_by_id[1001].soldier_state_at], 60_328)
+        state_at = after._records_by_id[1001].soldier_state_at
+        self.assertEqual(troops[state_at:state_at + 2], [60_328, 0])
         self.assertEqual(troops[after._records_by_id[1002].soldier_state_at], 0)
         self.assertEqual(original.to_bytes(), before)
 
@@ -43,7 +44,7 @@ class RealmEditsTests(unittest.TestCase):
                     edit_realm(campaign, RealmEdits(maximize_soldiers=True), (),
                                soldier_experience=experience)
 
-    def test_assigns_a_trained_soldier_type_to_an_existing_owned_troop(self):
+    def test_assigns_a_trained_soldier_type_and_fills_existing_troops(self):
         save = SaveFile.parse(campaign_bytes())
         campaign = Campaign(save)
         state_at = campaign._records_by_id[1001].soldier_state_at
@@ -53,11 +54,11 @@ class RealmEditsTests(unittest.TestCase):
         after = Campaign.parse(edit_realm(campaign, edits, (), soldier_experience={1171: 60_328}))
 
         self.assertEqual(after._save.sections['TroopGameData'][state_at - 1:state_at + 2],
-                         [1171, 60_328, 60])
+                         [1171, 60_328, 500])
         self.assertEqual(after.player_soldier_experience[1171], 60_328)
         self.assertEqual(save.sections['TroopGameData'][state_at - 1:state_at + 2], [1121, 0, 60])
 
-    def test_can_assign_an_own_officer_with_zero_troops(self):
+    def test_fills_troops_when_assigning_an_officer_with_zero_troops(self):
         campaign = Campaign.parse(campaign_bytes())
         state_at = campaign._records_by_id[1001].soldier_state_at
         edits = RealmEdits(soldier_assignments={1001: 1171})
@@ -65,7 +66,7 @@ class RealmEditsTests(unittest.TestCase):
         after = Campaign.parse(edit_realm(campaign, edits, (), soldier_experience={1171: 60_328}))
 
         self.assertEqual(after._save.sections['TroopGameData'][state_at - 1:state_at + 2],
-                         [1171, 60_328, 0])
+                         [1171, 60_328, 500])
 
     def test_updates_requested_stats_on_selected_owned_city_only(self):
         original = campaign_bytes()
